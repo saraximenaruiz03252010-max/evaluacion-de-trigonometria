@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematica recreativa</title>
+</head>
+<body>
+    
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aventura Inclusiva | Reino de los Genios</title>
+<style>
+:root {
+  --fondo: #f3f6ff;
+  --panel: #ffffff;
+  --texto: #202b49;
+  --primario: #5145cd;
+  --borde: #d9def5;
+  --acierto: #147a48;
+  --error: #a12d35;
+  --letra: 20px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: var(--letra);
+  line-height: 1.5;
+}
+button, input, select { font: inherit; }
+button {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 13px 18px;
+  font-weight: bold;
+  min-height: 54px;
+  transition: transform .15s, background .15s;
+}
+button:hover { transform: translateY(-2px); }
+button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 4px solid #f0a900;
+  outline-offset: 3px;
+}
+button:disabled { opacity: .55; cursor: not-allowed; }
+.primary { background: var(--primario); color: white; }
+.secondary { background: #e9e7ff; color: #30278e; }
+.neutral { background: white; color: var(--texto); border-color: var(--borde); }
+.good { background: #e0f6e9; color: #145c37; }
+.bad { background: #fff0ed; color: #8b2626; }
+header {
+  background: var(--panel);
+  border-bottom: 2px solid var(--borde);
+  padding: 14px 4%;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.brand { font-size: 1.05em; font-weight: 900; }
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+.toolbar button { min-height: 44px; padding: 8px 12px; }
+main { width: min(1000px, 94%); margin: 25px auto 45px; }
+.screen { display: none; }
+.screen.active { display: block; animation: appear .2s ease-out; }
+@keyframes appear {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero, .panel {
+  background: var(--panel);
+  border: 2px solid var(--borde);
+  border-radius: 26px;
+  padding: clamp(18px, 4vw, 36px);
+  margin-bottom: 20px;
+}
+.hero { text-align: center; padding-top: 38px; padding-bottom: 38px; }
+.mascot { font-size: clamp(65px, 13vw, 105px); line-height: 1.3; }
+h1 { font-size: clamp(1.6em, 5vw, 2.5em); line-height: 1.15; }
+h2 { font-size: 1.45em; line-height: 1.25; }
+h3 { font-size: 1.12em; }
+p { margin: 10px 0 18px; }
+.small { font-size: .85em; }
+.muted { color: #4b5875; }
+.center { text-align: center; }
+.actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 15px; }
+.level-card {
+  text-align: left;
+  min-height: 175px;
+  padding: 20px;
+  background: white;
+  border: 2px solid var(--borde);
+  border-radius: 20px;
+  color: var(--texto);
+}
+.level-card .emoji { display: block; font-size: 2.1em; }
+.level-card strong { display: block; margin: 5px 0; }
+.level-card.done { border-color: #16814d; background: #effbf3; }
+.progress-wrap {
+  height: 15px; background: #e4e7f3;
+  border-radius: 20px; overflow: hidden; margin: 12px 0;
+}
+#progressBar { height: 100%; width: 0%; background: #16814d; transition: width .25s; }
+.question { text-align: center; }
+.question-text { font-size: 1.25em; font-weight: bold; margin: 22px 0; }
+.visual {
+  min-height: 130px; display: flex; gap: 15px;
+  align-items: center; justify-content: center; flex-wrap: wrap;
+  padding: 12px; margin: 12px 0 20px;
+}
+.option-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px; max-width: 680px; margin: auto;
+}
+.option {
+  background: white; color: var(--texto);
+  border: 3px solid var(--borde); min-height: 78px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 9px; flex-direction: column;
+}
+.option[aria-pressed="true"] { border-color: var(--primario); background: #efedff; }
+.option.correct { border-color: #16814d; background: #e0f6e9; }
+.option.wrong { border-color: #b53535; background: #fff0ed; }
+.shape { display: inline-block; width: 58px; height: 58px; }
+.circle { background: #ed515d; border-radius: 50%; }
+.square { background: #3287e8; }
+.triangle {
+  width: 0; height: 0;
+  border-left: 32px solid transparent;
+  border-right: 32px solid transparent;
+  border-bottom: 58px solid #e9aa21;
+}
+.rectangle { background: #24a66b; width: 76px; height: 45px; }
+.diamond { width: 43px; height: 43px; background: #a05bd4; transform: rotate(45deg); }
+.star { color: #dc9a00; font-size: 2em; }
+.feedback {
+  border-radius: 14px; padding: 15px; margin-top: 18px;
+  font-weight: bold; text-align: center;
+}
+.feedback:empty { display: none; }
+.feedback.success { background: #e0f6e9; color: #145c37; }
+.feedback.try { background: #fff0ed; color: #8b2626; }
+.road {
+  display: flex; gap: 8px; justify-content: center;
+  align-items: center; flex-wrap: wrap; font-size: 1.4em;
+}
+.blank {
+  min-width: 58px; min-height: 58px; border: 3px dashed #5145cd;
+  border-radius: 12px; display: inline-flex;
+  align-items: center; justify-content: center;
+}
+.counter { font-size: 1.2em; font-weight: bold; }
+.big-number { font-size: clamp(3em, 12vw, 5em); font-weight: 900; color: #5145cd; }
+.number-tools { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center; }
+.number-tools input { width: 130px; padding: 12px; border: 2px solid var(--borde); border-radius: 12px; }
+.move-board {
+  position: relative; max-width: 360px; height: 300px;
+  margin: 18px auto; background: #edf4ff;
+  border: 3px solid #a9bee8; border-radius: 22px;
+  overflow: hidden;
+  background-image: linear-gradient(#d8e4fa 1px, transparent 1px),
+                    linear-gradient(90deg, #d8e4fa 1px, transparent 1px);
+  background-size: 25% 25%;
+}
+#player {
+  position: absolute; left: 40%; top: 40%;
+  font-size: 42px; transition: left .2s, top .2s;
+}
+.dpad {
+  display: grid; grid-template-columns: repeat(3, 65px);
+  gap: 8px; justify-content: center; margin: 15px auto;
+}
+.dpad button { padding: 5px; font-size: 1.3em; }
+.dpad .empty { visibility: hidden; }
+.settings {
+  display: flex; gap: 12px; align-items: center;
+  flex-wrap: wrap; justify-content: center; margin-top: 20px;
+}
+select, input[type="range"] { max-width: 100%; }
+select { padding: 10px; border: 2px solid var(--borde); border-radius: 10px; }
+.badge {
+  display: inline-block; background: #fff2c7; color: #6c4b00;
+  padding: 8px 14px; border-radius: 999px; margin: 5px;
+}
+footer { text-align: center; padding: 20px; font-size: .8em; color: #4b5875; }
+@media(max-width:600px) {
+  .grid, .option-grid { grid-template-columns: 1fr; }
+  header { align-items: flex-start; }
+  .toolbar { width: 100%; }
+  .toolbar button { flex: 1; }
+  main { margin-top: 15px; }
+  .hero, .panel { border-radius: 19px; }
+}
+@media(prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">🌟 Reino de los Genios</div>
+  <div class="toolbar" aria-label="Herramientas de accesibilidad">
+    <button class="neutral" id="voiceBtn" aria-pressed="true">🔊 Voz: sí</button>
+    <button class="neutral" id="repeatBtn">🔁 Repetir</button>
+    <button class="neutral" id="textBtn">A+ Texto</button>
+    <button class="neutral" id="contrastBtn" aria-pressed="false">◐ Contraste</button>
+  </div>
+</header>
+
+<main>
+  <!-- PANTALLA 1: INICIO -->
+  <section class="screen active" id="home">
+    <div class="hero">
+      <div class="mascot" role="img" aria-label="Robot guía amistoso">🤖</div>
+      <h1>¡Aventura Inclusiva!</h1>
+      <h2>El Reino de los Pequeños Genios</h2>
+      <p>¡Hola, explorador! ¿Estás listo para aprender, jugar y ganar estrellas?</p>
+      <p>✨ Figuras · 🧩 Patrones · 🔢 Números · 🧭 Direcciones</p>
+      <div class="actions">
+        <button class="primary" id="playBtn">🎮 ¡JUGAR!</button>
+        <button class="secondary" id="instructionsBtn">📖 ¿Cómo se juega?</button>
+      </div>
+    </div>
+    <div class="panel center">
+      <h2>¡Cada intento te ayuda a aprender!</h2>
+      <p>No hay castigos ni cronómetros. Puedes repetir las actividades y avanzar a tu ritmo.</p>
+    </div>
+  </section>
+
+  <!-- PANTALLA 2: SELECCIÓN DE NIVELES -->
+  <section class="screen" id="levels">
+    <div class="panel">
+      <h2>🗺️ Elige tu aventura</h2>
+      <p>Selecciona cualquier nivel. ¡Puedes volver a jugar cuando quieras!</p>
+      <div class="grid" id="levelGrid">
+        <button class="level-card" data-level="0">
+          <span class="emoji">🔴</span><strong>Nivel 1: Figuras</strong>
+          <span>Conoce formas y objetos.</span><span class="small" id="done0">Aún por explorar</span>
+        </button>
+        <button class="level-card" data-level="1">
+          <span class="emoji">🧩</span><strong>Nivel 2: Secuencias</strong>
+          <span>Completa los patrones.</span><span class="small" id="done1">Aún por explorar</span>
+        </button>
+        <button class="level-card" data-level="2">
+          <span class="emoji">🔢</span><strong>Nivel 3: Números</strong>
+          <span>Del 1 al 99.</span><span class="small" id="done2">Aún por explorar</span>
+        </button>
+        <button class="level-card" data-level="3">
+          <span class="emoji">🧭</span><strong>Nivel 4: Direcciones</strong>
+          <span>Izquierda, derecha, arriba y abajo.</span><span class="small" id="done3">Aún por explorar</span>
+        </button>
+      </div>
+      <div class="actions">
+        <button class="secondary" id="freeBtn">🔢 Explorar números</button>
+        <button class="neutral" data-go="home">🏠 Inicio</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANTALLA 3: INSTRUCCIONES -->
+  <section class="screen" id="instructions">
+    <div class="panel">
+      <h2>📖 ¡Aprendamos a jugar!</h2>
+      <ul>
+        <li>Elige uno de los cuatro niveles.</li>
+        <li>Lee o escucha la pregunta.</li>
+        <li>Selecciona la respuesta que creas correcta.</li>
+        <li>Si necesitas ayuda, pulsa “Repetir” o lee la pista.</li>
+        <li>Al terminar, recibirás estrellas por tus respuestas correctas.</li>
+        <li>Usa los controles de voz, texto y contraste cuando los necesites.</li>
+      </ul>
+      <p><strong>Recuerda:</strong> equivocarse es parte de aprender. ¡No tienes que hacerlo todo de una vez!</p>
+      <div class="actions">
+        <button class="primary" id="instructionsPlay">¡Vamos a jugar!</button>
+        <button class="neutral" data-go="home">Volver</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANTALLA 4: ACTIVIDADES -->
+  <section class="screen" id="game">
+    <div class="panel">
+      <div class="small muted" id="levelName">Nivel</div>
+      <div class="progress-wrap" role="progressbar" aria-label="Progreso del nivel"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress">
+        <div id="progressBar"></div>
+      </div>
+      <div class="small" id="questionCount">Pregunta 1</div>
+      <div class="question">
+        <div id="visual" class="visual" aria-live="polite"></div>
+        <div id="questionText" class="question-text"></div>
+        <div id="options" class="option-grid"></div>
+      </div>
+      <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+      <div class="actions">
+        <button class="secondary" id="hintBtn">💡 Dame una pista</button>
+        <button class="neutral" id="gameRepeatBtn">🔊 Escuchar pregunta</button>
+        <button class="primary" id="nextBtn" hidden>Siguiente ➜</button>
+        <button class="neutral" id="exitBtn">🗺️ Salir del nivel</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANTALLA DE PRÁCTICA LIBRE -->
+  <section class="screen" id="practice">
+    <div class="panel center">
+      <h2>🔢 Laboratorio de números</h2>
+      <p>Escribe un número del 1 al 99 o explóralos con las flechas.</p>
+      <div class="big-number" id="practiceNumber" aria-live="polite">25</div>
+      <div id="numberWords" class="counter">Veinticinco</div>
+      <div class="actions">
+        <button class="secondary" id="prevNum">⬅ Anterior</button>
+        <button class="secondary" id="nextNum">Siguiente ➡</button>
+      </div>
+      <div class="number-tools">
+        <label for="numInput">Ir al número:</label>
+        <input type="number" id="numInput" min="1" max="99" value="25">
+        <button class="primary" id="goNum">Explorar</button>
+        <button class="neutral" id="sayNum">🔊 Escuchar</button>
+      </div>
+      <div class="actions">
+        <button class="neutral" data-go="levels">Volver a los niveles</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANTALLA 5: RESULTADOS -->
+  <section class="screen" id="results">
+    <div class="panel center">
+      <div class="mascot" aria-hidden="true">🏆</div>
+      <h2 id="resultTitle">¡Nivel completado!</h2>
+      <p id="resultText"></p>
+      <div id="resultStars" aria-label="Estrellas obtenidas"></div>
+      <p id="resultMessage"></p>
+      <div class="actions">
+        <button class="primary" id="retryBtn">🔁 Volver a jugar</button>
+        <button class="secondary" id="nextLevelBtn">Siguiente nivel ➜</button>
+        <button class="neutral" data-go="levels">🗺️ Elegir nivel</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANTALLA 6: FINAL -->
+  <section class="screen" id="final">
+    <div class="hero">
+      <div class="mascot" aria-hidden="true">🌈</div>
+      <h1>¡Eres un gran explorador!</h1>
+      <h2>¡Has llenado el reino de aprendizaje!</h2>
+      <p id="finalText"></p>
+      <div id="finalBadges"></div>
+      <p>Cada persona aprende a su manera. ¡Sigue explorando y creyendo en ti!</p>
+      <div class="actions">
+        <button class="primary" id="finalPlayAgain">Volver a jugar</button>
+        <button class="secondary" data-go="levels">Elegir nivel</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Aventura Inclusiva · Aprende a tu ritmo · Versión educativa sin instalaciones
+</footer>
+
+<script>
+"use strict";
+
+// ---------- DATOS Y ESTADO ----------
+const levelNames = [
+  "Nivel 1: Figuras geométricas",
+  "Nivel 2: Secuencias y patrones",
+  "Nivel 3: Números del 1 al 99",
+  "Nivel 4: Lateralidad y orientación"
+];
+
+const shapeData = {
+  "círculo": { html: '<span class="shape circle" aria-label="círculo"></span>', symbol: "●" },
+  "cuadrado": { html: '<span class="shape square" aria-label="cuadrado"></span>', symbol: "■" },
+  "triángulo": { html: '<span class="shape triangle" aria-label="triángulo"></span>', symbol: "▲" },
+  "rectángulo": { html: '<span class="shape rectangle" aria-label="rectángulo"></span>', symbol: "▬" },
+  "rombo": { html: '<span class="shape diamond" aria-label="rombo"></span>', symbol: "◆" }
+};
+
+const shapeQuestions = [
+  { q: "¿Cuál de estas figuras es un círculo?", visual: "🔴", opts: ["cuadrado","círculo","triángulo","rectángulo"], a: "círculo", hint: "No tiene esquinas y es redondo." },
+  { q: "¿Qué figura tiene tres lados?", visual: "🔺", opts: ["círculo","rectángulo","triángulo","rombo"], a: "triángulo", hint: "Cuenta sus tres lados." },
+  { q: "¿Cuál figura tiene cuatro lados iguales y cuatro esquinas?", visual: "🟦", opts: ["cuadrado","círculo","triángulo","rectángulo"], a: "cuadrado", hint: "Sus cuatro lados miden lo mismo." },
+  { q: "Una puerta suele parecerse a un...", visual: "🚪", opts: ["círculo","triángulo","rectángulo","rombo"], a: "rectángulo", hint: "Es más largo que ancho y tiene cuatro esquinas." },
+  { q: "¿Qué figura se parece a una señal de tránsito triangular?", visual: "🚸", opts: ["rombo","triángulo","círculo","cuadrado"], a: "triángulo", hint: "Tiene tres lados y tres esquinas." },
+  { q: "¿Cuál figura se parece a un diamante dibujado?", visual: "💎", opts: ["círculo","rectángulo","rombo","cuadrado"], a: "rombo", hint: "Parece un cuadrado inclinado." }
+];
+
+const patternQuestions = [
+  { q: "¿Qué figura sigue el patrón?", seq: ["🔴","🔵","🔴","🔵","❓"], opts: ["🔴","🔵","🟩","⭐"], a: "🔴", hint: "El rojo y el azul se alternan." },
+  { q: "Completa la secuencia.", seq: ["⭐","⭐","🌙","⭐","⭐","❓"], opts: ["🌙","⭐","☀️","❤️"], a: "🌙", hint: "Después de dos estrellas aparece una luna." },
+  { q: "¿Qué número sigue?", seq: ["2","4","6","8","❓"], opts: ["9","10","11","12"], a: "10", hint: "Vamos sumando dos cada vez." },
+  { q: "Completa el patrón de colores.", seq: ["🟢","🟡","🟡","🟢","🟡","🟡","❓"], opts: ["🟢","🟡","🔴","🔵"], a: "🟢", hint: "Se repite un verde y dos amarillos." },
+  { q: "¿Qué número falta?", seq: ["5","10","15","❓","25"], opts: ["18","20","22","30"], a: "20", hint: "Cada número aumenta cinco." },
+  { q: "¿Qué figura sigue?", seq: ["🔺","🟦","🟦","🔺","🟦","🟦","❓"], opts: ["🔺","🟦","⚪","⭐"], a: "🔺", hint: "Un triángulo y luego dos cuadrados." }
+];
+
+function numberName(n) {
+  const units = ["cero","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve"];
+  const teens = ["diez","once","doce","trece","catorce","quince","dieciséis","diecisiete","dieciocho","diecinueve"];
+  const tens = ["","","veinte","treinta","cuarenta","cincuenta","sesenta","setenta","ochenta","noventa"];
+  if (n < 10) return units[n];
+  if (n < 20) return teens[n - 10];
+  if (n === 20) return "veinte";
+  if (n < 30) return "veinti" + units[n - 20];
+  if (n % 10 === 0) return tens[Math.floor(n / 10)];
+  return tens[Math.floor(n / 10)] + " y " + units[n % 10];
+}
+
+function makeNumberQuestions() {
+  return [
+    { q: "¿Qué número viene después del 28?", visual: "27 · 28 · ❓", opts: ["27","29","30","38"], a: "29", hint: "Solo debes sumar uno a 28." },
+    { q: "¿Cuál de estos números es mayor?", visual: "Compara los números", opts: ["14","41","24","11"], a: "41", hint: "Compara primero las decenas." },
+    { q: "¿Qué número tiene 5 decenas y 3 unidades?", visual: "5 decenas + 3 unidades", opts: ["35","53","58","305"], a: "53", hint: "Cinco decenas son 50. Añade 3." },
+    { q: "¿Cuál número es menor?", visual: "Elige el más pequeño", opts: ["72","27","62","82"], a: "27", hint: "El número con dos decenas es el menor." },
+    { q: "¿Qué número falta? 46, 47, __, 49", visual: "46 → 47 → ❓ → 49", opts: ["45","48","50","40"], a: "48", hint: "Cuenta hacia adelante de uno en uno." },
+    { q: "¿Cuántos objetos hay?", visual: "🍎 🍎 🍎 🍎 🍎 🍎", opts: ["5","6","7","8"], a: "6", hint: "Cuenta cada manzana una sola vez." },
+    { q: "¿Cuál es el número 90 escrito en cifras?", visual: "Noventa", opts: ["19","99","90","9"], a: "90", hint: "Noventa tiene nueve decenas." },
+    { q: "¿Qué número está entre 64 y 66?", visual: "64 · ❓ · 66", opts: ["63","65","67","60"], a: "65", hint: "Cuenta 64, 65, 66." },
+    { q: "¿Cuántas decenas hay en 80?", visual: "80 = ? decenas", opts: ["8","80","18","0"], a: "8", hint: "Cada decena representa diez unidades." },
+    { q: "Ordena mentalmente: ¿cuál es el mayor?", visual: "36 · 63 · 56 · 26", opts: ["36","63","56","26"], a: "63", hint: "Compara las decenas primero." }
+  ];
+}
+
+const directionQuestions = [
+  { q: "¿Hacia dónde debe moverse el robot?", dir: "derecha", visual: "El robot está en el centro.", opts: ["⬅ Izquierda","➡ Derecha","⬆ Arriba","⬇ Abajo"], a: "➡ Derecha", hint: "La derecha es el lado de la flecha ➡." },
+  { q: "¿Qué objeto está arriba del robot?", visual: "⬆️ ☀️ · 🤖 · 🌳", opts: ["☀️ El sol","🌳 El árbol","🤖 El robot","Ninguno"], a: "☀️ El sol", hint: "Arriba es la parte superior." },
+  { q: "Mueve el robot hacia abajo.", dir: "abajo", visual: "El robot debe bajar.", opts: ["⬆ Arriba","➡ Derecha","⬇ Abajo","⬅ Izquierda"], a: "⬇ Abajo", hint: "Abajo es hacia el suelo." },
+  { q: "¿Qué dirección indica la flecha?", visual: "⬅️", opts: ["Derecha","Abajo","Arriba","Izquierda"], a: "Izquierda", hint: "La punta de la flecha señala el lado izquierdo." },
+  { q: "El pájaro está sobre la rama. ¿Dónde está el pájaro?", visual: "🐦\n🌳", opts: ["Abajo","Arriba","Izquierda","Derecha"], a: "Arriba", hint: "Sobre significa que está más alto." },
+  { q: "¿Qué dirección es contraria a arriba?", visual: "⬆️ ↔ ❓", opts: ["Izquierda","Derecha","Abajo","Arriba"], a: "Abajo", hint: "Piensa en el movimiento hacia el suelo." },
+  { q: "El tesoro está a tu derecha. ¿Hacia dónde vas?", visual: "🧒  ➡️  💎", opts: ["Izquierda","Derecha","Arriba","Abajo"], a: "Derecha", hint: "Sigue la flecha hacia el tesoro." },
+  { q: "¿Cuál flecha apunta hacia arriba?", visual: "Escoge la flecha", opts: ["⬇","⬅","⬆","➡"], a: "⬆", hint: "La punta debe mirar al cielo." }
+];
+
+const state = {
+  level: 0, questions: [], index: 0, score: 0,
+  answered: false, voice: true, contrast: false,
+  font: 20, stars: [false,false,false,false],
+  lastText: "¡Bienvenido al Reino de los Genios!"
+};
+
+const $ = id => document.getElementById(id);
+let playerX = 40, playerY = 40, currentQuestion = null;
+
+// ---------- NAVEGACIÓN ----------
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function speak(text) {
+  state.lastText = text;
+  if (!state.voice || !("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "es-ES";
+  utterance.rate = 0.88;
+  utterance.pitch = 1;
+  window.speechSynthesis.speak(utterance);
+}
+
+function stopVoice() {
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+}
+
+function startLevel(level) {
+  state.level = level;
+  state.index = 0;
+  state.score = 0;
+  state.answered = false;
+
+  let pool;
+  if (level === 0) pool = shapeQuestions;
+  else if (level === 1) pool = patternQuestions;
+  else if (level === 2) pool = makeNumberQuestions();
+  else pool = directionQuestions;
+
+  // Se muestran seis preguntas por partida para que sea fácil repetir.
+  state.questions = shuffle([...pool]).slice(0, 6);
+  if (level === 2) state.questions = shuffle([...pool]).slice(0, 6);
+  showScreen("game");
+  renderQuestion();
+}
+
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+// ---------- PRESENTACIÓN DE PREGUNTAS ----------
+function renderQuestion() {
+  const q = state.questions[state.index];
+  currentQuestion = q;
+  state.answered = false;
+  $("levelName").textContent = levelNames[state.level];
+  $("questionCount").textContent =
+    "Pregunta " + (state.index + 1) + " de " + state.questions.length;
+  const percent = Math.round(state.index / state.questions.length * 100);
+  $("progressBar").style.width = percent + "%";
+  $("progress").setAttribute("aria-valuenow", percent);
+  $("questionText").textContent = q.q;
+  $("feedback").textContent = "";
+  $("feedback").className = "feedback";
+  $("nextBtn").hidden = true;
+  $("hintBtn").disabled = false;
+  $("options").replaceChildren();
+  const visual = $("visual");
+  visual.replaceChildren();
+
+  if (state.level === 0) {
+    visual.textContent = q.visual;
+    visual.style.fontSize = "3em";
+  } else if (state.level === 1) {
+    visual.style.fontSize = "1.5em";
+    const road = document.createElement("div");
+    road.className = "road";
+    q.seq.forEach((item, i) => {
+      const cell = document.createElement("span");
+      cell.textContent = item;
+      cell.setAttribute("aria-label", item === "❓" ? "espacio vacío" : item);
+      road.appendChild(cell);
+      if (i < q.seq.length - 1) {
+        const arrow = document.createElement("span");
+        arrow.textContent = "→";
+        arrow.setAttribute("aria-hidden", "true");
+        road.appendChild(arrow);
+      }
+    });
+    visual.appendChild(road);
+  } else if (state.level === 2) {
+    visual.style.fontSize = "1.5em";
+    visual.textContent = q.visual;
+  } else {
+    visual.style.fontSize = "1.5em";
+    visual.textContent = q.visual;
+  }
+
+  const opts = shuffle(q.opts);
+  opts.forEach(option => {
+    const button = document.createElement("button");
+    button.className = "option";
+    button.type = "button";
+    button.textContent = option;
+    button.setAttribute("aria-pressed", "false");
+    button.addEventListener("click", () => chooseAnswer(option, button));
+    $("options").appendChild(button);
+  });
+
+  const fullText = q.q + " " +
+    (typeof q.visual === "string" ? q.visual.replace(/\n/g, " ") : "") +
+    ". Opciones: " + q.opts.join(", ");
+  if (state.voice) speak(fullText);
+}
+
+function chooseAnswer(answer, button) {
+  if (state.answered) return;
+  state.answered = true;
+  const q = currentQuestion;
+  const correct = answer === q.a;
+  $("options").querySelectorAll("button").forEach(b => {
+    b.disabled = true;
+    b.setAttribute("aria-pressed", String(b === button));
+    if (b.textContent === q.a) b.classList.add("correct");
+  });
+
+  if (correct) {
+    state.score++;
+    $("feedback").className = "feedback success";
+    $("feedback").textContent = "🌟 ¡Muy bien! ¡Lo estás logrando!";
+    speak("¡Muy bien! Respuesta correcta. ¡Lo estás logrando!");
+  } else {
+    button.classList.add("wrong");
+    $("feedback").className = "feedback try";
+    $("feedback").textContent = "💛 ¡Buen intento! La respuesta es: " + q.a +
+      ". " + q.hint + " Puedes aprender e intentarlo otra vez en otra partida.";
+    speak("¡Buen intento! La respuesta correcta es " + q.a + ". " + q.hint);
+  }
+
+  $("hintBtn").disabled = true;
+  $("nextBtn").hidden = false;
+  $("nextBtn").textContent =
+    state.index === state.questions.length - 1 ? "Ver mis resultados 🏆" : "Siguiente ➜";
+}
+
+function nextQuestion() {
+  if (!state.answered) {
+    $("feedback").className = "feedback try";
+    $("feedback").textContent = "Elige una respuesta para continuar. ¡Tómate tu tiempo!";
+    speak("Elige una respuesta para continuar. Tómate tu tiempo.");
+    return;
+  }
+  if (state.index < state.questions.length - 1) {
+    state.index++;
+    renderQuestion();
+  } else {
+    finishLevel();
+  }
+}
+
+function finishLevel() {
+  const total = state.questions.length;
+  const earned = Math.round(state.score / total * 3);
+  state.stars[state.level] = true;
+  $("progressBar").style.width = "100%";
+  $("progress").setAttribute("aria-valuenow", 100);
+  $("resultTitle").textContent = state.score === total
+    ? "¡Perfecto! ¡Lo conseguiste!" : "¡Nivel completado!";
+  $("resultText").textContent = "Respuestas correctas: " + state.score + " de " + total + ".";
+  $("resultStars").replaceChildren();
+  for (let i = 0; i < 3; i++) {
+    const star = document.createElement("span");
+    star.className = "star";
+    star.textContent = i < earned ? "★" : "☆";
+    star.setAttribute("aria-hidden", "true");
+    $("resultStars").appendChild(star);
+  }
+  $("resultMessage").textContent = state.score === total
+    ? "¡Increíble! Has respondido todas correctamente."
+    : "¡Cada pregunta es una oportunidad para aprender! Puedes repetir el nivel.";
+  $("nextLevelBtn").hidden = state.level === 3;
+  updateLevelCards();
+  showScreen("results");
+  speak("Nivel completado. Tuviste " + state.score + " respuestas correctas de " +
+    total + ". " + $("resultMessage").textContent);
+}
+
+function updateLevelCards() {
+  state.stars.forEach((done, i) => {
+    $("done" + i).textContent = done ? "✓ Nivel explorado" : "Aún por explorar";
+    const card = document.querySelector('[data-level="' + i + '"]');
+    card.classList.toggle("done", done);
+  });
+}
+
+// ---------- NÚMEROS: PRÁCTICA LIBRE ----------
+let practiceValue = 25;
+function renderPractice() {
+  $("practiceNumber").textContent = practiceValue;
+  $("numberWords").textContent = numberName(practiceValue);
+  $("numInput").value = practiceValue;
+}
+function setPracticeValue(n) {
+  if (!Number.isInteger(n) || n < 1 || n > 99) {
+    $("numberWords").textContent = "Escribe un número entre 1 y 99.";
+    speak("Escribe un número entre 1 y 99.");
+    return;
+  }
+  practiceValue = n;
+  renderPractice();
+}
+
+// ---------- MOVIMIENTO DEL PERSONAJE ----------
+function movePlayer(direction) {
+  const step = 20;
+  if (direction === "left") playerX = Math.max(0, playerX - step);
+  if (direction === "right") playerX = Math.min(80, playerX + step);
+  if (direction === "up") playerY = Math.max(0, playerY - step);
+  if (direction === "down") playerY = Math.min(80, playerY + step);
+  $("player").style.left = playerX + "%";
+  $("player").style.top = playerY + "%";
+}
+
+// ---------- EVENTOS DE BOTONES ----------
+$("playBtn").addEventListener("click", () => {
+  showScreen("levels");
+  speak("Elige tu aventura. Puedes empezar con cualquier nivel.");
+});
+$("instructionsBtn").addEventListener("click", () => {
+  showScreen("instructions");
+  speak("Lee cómo se juega. Elige un nivel, escucha la pregunta y selecciona una respuesta. No hay cronómetro.");
+});
+$("instructionsPlay").addEventListener("click", () => showScreen("levels"));
+
+document.querySelectorAll("[data-level]").forEach(btn => {
+  btn.addEventListener("click", () => startLevel(Number(btn.dataset.level)));
+});
+document.querySelectorAll("[data-go]").forEach(btn => {
+  btn.addEventListener("click", () => showScreen(btn.dataset.go));
+});
+$("nextBtn").addEventListener("click", nextQuestion);
+$("exitBtn").addEventListener("click", () => {
+  stopVoice();
+  showScreen("levels");
+});
+$("hintBtn").addEventListener("click", () => {
+  if (!currentQuestion) return;
+  $("feedback").className = "feedback";
+  $("feedback").textContent = "💡 Pista: " + currentQuestion.hint;
+  speak("Pista. " + currentQuestion.hint);
+});
+$("gameRepeatBtn").addEventListener("click", () => {
+  if (!currentQuestion) return;
+  speak(currentQuestion.q + " " + currentQuestion.hint +
+    " Opciones: " + currentQuestion.opts.join(", "));
+});
+$("repeatBtn").addEventListener("click", () => speak(state.lastText));
+
+$("voiceBtn").addEventListener("click", () => {
+  state.voice = !state.voice;
+  $("voiceBtn").textContent = state.voice ? "🔊 Voz: sí" : "🔇 Voz: no";
+  $("voiceBtn").setAttribute("aria-pressed", String(state.voice));
+  if (!state.voice) stopVoice();
+  else speak(state.lastText);
+});
+
+$("textBtn").addEventListener("click", () => {
+  state.font = state.font >= 28 ? 18 : state.font + 2;
+  document.documentElement.style.setProperty("--letra", state.font + "px");
+  $("textBtn").textContent = state.font >= 28 ? "A− Texto" : "A+ Texto";
+  speak("Tamaño del texto ajustado.");
+});
+
+$("contrastBtn").addEventListener("click", () => {
+  state.contrast = !state.contrast;
+  document.body.style.setProperty("--fondo", state.contrast ? "#000000" : "#f3f6ff");
+  document.body.style.setProperty("--panel", state.contrast ? "#111111" : "#ffffff");
+  document.body.style.setProperty("--texto", state.contrast ? "#ffffff" : "#202b49");
+  document.body.style.setProperty("--borde", state.contrast ? "#ffffff" : "#d9def5");
+  document.body.style.setProperty("--primario", state.contrast ? "#174bd6" : "#5145cd");
+  document.body.style.setProperty("color", state.contrast ? "#ffffff" : "#202b49");
+  $("contrastBtn").setAttribute("aria-pressed", String(state.contrast));
+  speak(state.contrast ? "Contraste alto activado." : "Contraste normal activado.");
+});
+
+$("freeBtn").addEventListener("click", () => {
+  setPracticeValue(25);
+  showScreen("practice");
+  speak("Laboratorio de números. Explora los números del uno al noventa y nueve.");
+});
+$("prevNum").addEventListener("click", () => setPracticeValue(Math.max(1, practiceValue - 1)));
+$("nextNum").addEventListener("click", () => setPracticeValue(Math.min(99, practiceValue + 1)));
+$("goNum").addEventListener("click", () => setPracticeValue(Number($("numInput").value)));
+$("sayNum").addEventListener("click", () =>
+  speak(practiceValue + ". " + numberName(practiceValue)));
+
+$("retryBtn").addEventListener("click", () => startLevel(state.level));
+$("finalPlayAgain").addEventListener("click", () => {
+  state.stars = [false,false,false,false];
+  updateLevelCards();
+  showScreen("levels");
+});
+$("finalPlayAgain").addEventListener("dblclick", () => {
+  state.stars = [false,false,false,false];
+});
+
+function showFinal() {
+  $("finalText").textContent = "Has explorado los cuatro niveles. ¡Gracias por aprender jugando!";
+  $("finalBadges").innerHTML = state.stars.map((done, i) =>
+    done ? '<span class="badge">🏅 ' + levelNames[i].replace("Nivel " + (i+1) + ": ", "") + '</span>' : ""
+  ).join("");
+  showScreen("final");
+}
+
+// Final de la aventura: al terminar el cuarto nivel, se ofrece la pantalla final.
+const originalFinishLevel = finishLevel;
+finishLevel = function() {
+  originalFinishLevel();
+  if (state.level === 3) {
+    const nextButton = $("nextLevelBtn");
+    nextButton.hidden = false;
+    nextButton.textContent = "🌈 Ver pantalla final";
+    nextButton.onclick = showFinal;
+  } else {
+    $("nextLevelBtn").onclick = () => startLevel(state.level + 1);
+  }
+};
+
+// Iniciar con botones de dirección disponibles dentro del nivel de lateralidad.
+// El personaje se muestra en el área visual de las preguntas de dirección.
+const originalRenderQuestion = renderQuestion;
+renderQuestion = function() {
+  originalRenderQuestion();
+  if (state.level === 3) {
+    const board = document.createElement("div");
+    board.className = "move-board";
+    board.setAttribute("role", "img");
+    board.setAttribute("aria-label", "Tablero donde el robot se puede mover en cuatro direcciones.");
+    const player = document.createElement("span");
+    player.id = "player";
+    player.textContent = "🤖";
+    player.setAttribute("aria-label", "Robot");
+    player.style.left = playerX + "%";
+    player.style.top = playerY + "%";
+    board.appendChild(player);
+    $("visual").appendChild(board);
+
+    const controls = document.createElement("div");
+    controls.className = "dpad";
+    controls.setAttribute("aria-label", "Controles para mover el robot");
+    const buttons = [
+      ["", ""], ["⬆", "up"], ["", ""],
+      ["⬅", "left"], ["↺", "reset"], ["➡", "right"],
+      ["", ""], ["⬇", "down"], ["", ""]
+    ];
+    buttons.forEach(([label, dir]) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label || " ";
+      b.className = label ? "secondary" : "empty";
+      b.setAttribute("aria-label", dir === "reset" ? "Volver al centro" :
+        dir ? "Mover " + ({up:"arriba",down:"abajo",left:"a la izquierda",right:"a la derecha"}[dir]) : " ");
+      b.disabled = !dir;
+      b.addEventListener("click", () => {
+        if (dir === "reset") { playerX = 40; playerY = 40; }
+        else movePlayer(dir);
+        const p = $("player");
+        if (p) { p.style.left = playerX + "%"; p.style.top = playerY + "%"; }
+        if (dir && dir !== "reset") speak("Robot movido. " + ({up:"Arriba",down:"Abajo",left:"Izquierda",right:"Derecha"}[dir]));
+      });
+      controls.appendChild(b);
+    });
+    $("visual").appendChild(controls);
+  }
+};
+
+updateLevelCards();
+renderPractice();
+</script>
+</body>
+</html>
+
+</body>
+</html>
